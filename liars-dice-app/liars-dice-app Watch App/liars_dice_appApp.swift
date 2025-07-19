@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct liars_dice_app_Watch_AppApp: App {
+    @StateObject private var gameState = GameState()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                DiceSelectionView()
+            }
+            .environmentObject(gameState)
         }
     }
 }
