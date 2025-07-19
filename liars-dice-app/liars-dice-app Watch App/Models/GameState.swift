@@ -85,6 +85,8 @@ class GameState: ObservableObject {
     // MARK: - Private Methods
     
     private func updateProbability() {
+        let oldProbability = currentProbability
+        
         // Update probability value
         currentProbability = probabilityEngine.getProbability(
             bid: currentBid,
@@ -107,6 +109,41 @@ class GameState: ObservableObject {
         breakEvenBid = probabilityEngine.getBreakEvenBid(
             totalDice: totalDiceCount
         )
+        
+        // Announce significant probability changes for VoiceOver users
+        announceSignificantChanges(oldProbability: oldProbability)
+    }
+    
+    /// Announce significant probability changes for accessibility
+    private func announceSignificantChanges(oldProbability: Double) {
+        let oldCategory = getProbabilityCategory(oldProbability)
+        let newCategory = getProbabilityCategory(currentProbability)
+        
+        if oldCategory != newCategory {
+            let announcement = "Probability changed to \(probabilityPercentage), \(probabilityDescription)"
+            
+            #if os(iOS)
+            // Post accessibility announcement for iOS
+            DispatchQueue.main.async {
+                UIAccessibility.post(notification: .announcement, argument: announcement)
+            }
+            #elseif os(watchOS)
+            // For watchOS, we rely on VoiceOver reading the updated accessibility values
+            // The accessibilityValue on the probability display will be read automatically
+            print("Accessibility: \(announcement)")
+            #endif
+        }
+    }
+    
+    /// Get probability category for change detection
+    private func getProbabilityCategory(_ probability: Double) -> String {
+        if probability >= 0.5 {
+            return "favorable"
+        } else if probability >= 0.3 {
+            return "moderate"
+        } else {
+            return "unlikely"
+        }
     }
     
     // MARK: - Computed Properties

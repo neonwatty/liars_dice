@@ -10,13 +10,20 @@ import SwiftUI
 @main
 struct liars_dice_app_Watch_AppApp: App {
     @StateObject private var gameState = GameState()
+    @State private var showOnboarding = !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                DiceSelectionView()
+            Group {
+                if showOnboarding {
+                    OnboardingView(showOnboarding: $showOnboarding)
+                } else {
+                    NavigationStack {
+                        DiceSelectionView()
+                    }
+                    .environmentObject(gameState)
+                }
             }
-            .environmentObject(gameState)
         }
     }
 }

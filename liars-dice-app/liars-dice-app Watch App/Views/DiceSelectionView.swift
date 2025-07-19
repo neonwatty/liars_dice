@@ -47,6 +47,19 @@ struct DiceSelectionView: View {
                     .onAppear {
                         crownValue = Double(gameState.totalDiceCount)
                     }
+                    .accessibilityLabel("Total dice count")
+                    .accessibilityValue("\(gameState.totalDiceCount) dice")
+                    .accessibilityHint("Rotate the Digital Crown to adjust the number of dice in play")
+                    .accessibilityAdjustableAction { direction in
+                        switch direction {
+                        case .increment:
+                            gameState.incrementDice()
+                        case .decrement:
+                            gameState.decrementDice()
+                        @unknown default:
+                            break
+                        }
+                    }
                 
                 Spacer()
                 
@@ -75,6 +88,9 @@ struct DiceSelectionView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .scaleEffect(isNavigating ? 0.9 : 1.0)
+                .accessibilityLabel("Continue to probability view")
+                .accessibilityHint("Navigate to the probability calculation screen")
+                .accessibilityAddTraits(.isButton)
             }
             .padding(.trailing, 5)
         }

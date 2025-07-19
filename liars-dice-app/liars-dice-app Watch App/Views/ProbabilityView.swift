@@ -52,6 +52,19 @@ struct ProbabilityView: View {
                         .onAppear {
                             crownValue = Double(gameState.currentBid)
                         }
+                        .accessibilityLabel("Current bid")
+                        .accessibilityValue("\(gameState.currentBid) dice")
+                        .accessibilityHint("Rotate the Digital Crown to adjust your bid")
+                        .accessibilityAdjustableAction { direction in
+                            switch direction {
+                            case .increment:
+                                gameState.incrementBid()
+                            case .decrement:
+                                gameState.decrementBid()
+                            @unknown default:
+                                break
+                            }
+                        }
                     
                     // Probability display with color coding
                     ZStack {
@@ -64,6 +77,9 @@ struct ProbabilityView: View {
                             .foregroundColor(gameState.probabilityColor)
                     }
                     .padding(.horizontal, 20)
+                    .accessibilityLabel("Probability of success")
+                    .accessibilityValue("\(gameState.probabilityPercentage), \(gameState.probabilityDescription)")
+                    .accessibilityHint("This shows the likelihood that at least \(gameState.currentBid) dice show the claimed face")
                 }
                 
                 Spacer()
@@ -90,6 +106,9 @@ struct ProbabilityView: View {
                         )
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Back to dice selection")
+                .accessibilityHint("Return to the dice count selection screen")
+                .accessibilityAddTraits(.isButton)
                 
                 Spacer()
             }
