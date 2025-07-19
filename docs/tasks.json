@@ -1,0 +1,992 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 16,
+        "title": "Set up watchOS project structure",
+        "description": "Initialize a new watchOS app project with SwiftUI and configure the basic app structure.",
+        "details": "Create a new watchOS app project in Xcode using SwiftUI. Configure the app with appropriate display name 'Liars' Dice Probability', bundle identifier, and minimum watchOS version. Set up the project structure with appropriate folders for Models, Views, and ViewModels following MVVM architecture. Initialize Git repository and create initial commit. Ensure the project builds successfully on the simulator.\n\n**Documentation References:**\n- [watchOS App Programming Guide](https://developer.apple.com/documentation/watchos)\n- [SwiftUI for watchOS](https://developer.apple.com/documentation/swiftui/watchos)\n- [watchOS App Architecture](https://developer.apple.com/documentation/watchos/apps/architecting_your_watchos_app)\n- [Xcode Documentation](https://developer.apple.com/documentation/xcode)",
+        "testStrategy": "Verify project builds without errors. Test on watchOS simulator to ensure basic app shell launches correctly. Confirm project structure follows best practices for watchOS development.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create watchOS Xcode project",
+            "description": "Set up a new watchOS app project in Xcode with proper configuration for the Liars' Dice Probability app",
+            "dependencies": [],
+            "details": "Create a new watchOS app in Xcode selecting the 'App' template. Configure the project with display name 'Liars' Dice Probability', appropriate bundle identifier (e.g., com.yourname.liarsdice), and set minimum watchOS version to 9.0 or higher. Ensure SwiftUI is selected as the interface and Swift as the programming language. Remove any template code that isn't needed and verify the project builds successfully.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Set up MVVM folder structure",
+            "description": "Organize the project with proper MVVM architecture folders and create placeholder files",
+            "dependencies": [
+              1
+            ],
+            "details": "Create the following folder structure in the project: Models (for data structures and probability engine), Views (for SwiftUI views), ViewModels (for view state management and business logic), and Utilities (for helper functions). Add placeholder files in each folder to maintain structure. Create a README.md file documenting the project structure. Update the project navigator to use folder references that match the file system.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Initialize Git repository",
+            "description": "Set up version control with Git and make initial commit",
+            "dependencies": [
+              2
+            ],
+            "details": "Initialize a new Git repository in the project root directory. Create a .gitignore file appropriate for Swift/Xcode projects (include patterns for build artifacts, user-specific Xcode files, and other temporary files). Add all project files to staging and make an initial commit with message 'Initial project setup with MVVM structure'. Optionally, create a remote repository on GitHub or similar service and push the initial commit.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Configure app for simulator testing",
+            "description": "Set up the project for effective testing in the watchOS simulator",
+            "dependencies": [
+              1
+            ],
+            "details": "Configure the scheme settings for the watchOS simulator. Select appropriate simulator device (latest watchOS version). Create a basic test harness in the app to verify it launches correctly. Add logging to confirm app lifecycle events. Configure build settings to optimize for development and debugging. Test the app launch in the simulator and verify it runs without errors. Document any simulator-specific configurations needed for the team.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Implement probability calculation engine",
+        "description": "Create the core probability calculation engine with precomputed lookup table for binomial probabilities.",
+        "details": "Implement a ProbabilityEngine class that precomputes and stores binomial probability values P(k | n) = ∑ₓ₌ₖⁿ C(n, x) (1/6)ˣ (5/6)ⁿ⁻ˣ for n ≤ 40 and 0 ≤ k ≤ n. Use Swift's Accelerate framework for efficient computation if appropriate. Store results in a 2D lookup table for fast access. Implement a method to retrieve probability for given n and k values, and another method to find the break-even bid K₀ (maximum k where P ≥ 50%). Ensure calculations handle edge cases for n < 6 correctly.\n\n**Documentation References:**\n- [Binomial Distribution](https://en.wikipedia.org/wiki/Binomial_distribution)\n- [Cumulative Binomial Probability](https://en.wikipedia.org/wiki/Binomial_distribution#Cumulative_distribution_function)\n- [Swift Numerics](https://github.com/apple/swift-numerics)\n- [Accelerate Framework](https://developer.apple.com/documentation/accelerate)",
+        "testStrategy": "Create unit tests to verify probability calculations against known values. Test edge cases including n=1, k=0, k=n, and values near probability thresholds (30%, 50%). Verify break-even calculation returns correct values for various n inputs. Benchmark lookup performance to ensure <50ms response time.",
+        "priority": "high",
+        "dependencies": [
+          16
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Research and design binomial probability algorithms",
+            "description": "Research efficient algorithms for calculating binomial probabilities and design the overall architecture for the probability engine.",
+            "dependencies": [],
+            "details": "Research mathematical approaches for calculating binomial probabilities P(k | n) = ∑ₓ₌ₖⁿ C(n, x) (1/6)ˣ (5/6)ⁿ⁻ˣ. Evaluate different computational methods including direct calculation, recursive approaches, and approximations. Design the ProbabilityEngine class structure with appropriate interfaces. Document edge cases, especially for n < 6, and determine how they should be handled. Investigate Swift's Accelerate framework capabilities for potential performance improvements.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement core calculation functions",
+            "description": "Develop the fundamental mathematical functions needed to calculate binomial probabilities accurately.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement functions for factorial, combination (nCr), and binomial probability calculations. Create helper methods for calculating individual probability terms and cumulative probabilities. Ensure calculations maintain precision for the full range of required values (n ≤ 40). Handle potential numerical issues like overflow or underflow. Implement special case handling for edge cases identified in the research phase.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create lookup table structure",
+            "description": "Design and implement the data structure for storing precomputed probability values.",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement a 2D lookup table to store precomputed binomial probability values for n ≤ 40 and 0 ≤ k ≤ n. Design an efficient indexing scheme for quick access. Create methods to populate the table with calculated values. Implement accessor methods to retrieve probability values from the table. Ensure thread safety if applicable. Add validation to handle out-of-bounds access attempts.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Optimize for memory constraints",
+            "description": "Refine the implementation to minimize memory usage while maintaining performance.",
+            "dependencies": [
+              3
+            ],
+            "details": "Analyze memory usage of the lookup table implementation. Identify opportunities for memory optimization without sacrificing performance. Consider data structure alternatives or compression techniques if needed. Implement lazy loading or partial computation strategies if appropriate. Benchmark memory usage to ensure it meets watchOS constraints. Document memory usage characteristics for different n values.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement break-even threshold calculation",
+            "description": "Create functionality to determine the break-even bid value (K₀) for any given number of dice.",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement a method to find the break-even bid K₀, defined as the maximum k where P(k | n) ≥ 50%. Create an efficient algorithm to search the probability table for this threshold. Handle edge cases where no such threshold exists. Optimize the search algorithm for performance. Add caching if appropriate to avoid redundant calculations. Ensure the implementation works correctly for all valid n values.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Develop comprehensive unit tests",
+            "description": "Create a suite of tests to verify the accuracy and performance of the probability engine.",
+            "dependencies": [
+              2,
+              3,
+              5
+            ],
+            "details": "Develop unit tests to verify probability calculations against known values. Create tests for edge cases including n=1, k=0, k=n, and values near probability thresholds (30%, 50%). Implement tests to verify the break-even calculation returns correct values for various n inputs. Create performance tests to ensure lookup operations complete in under 50ms. Test memory usage to ensure it stays within acceptable limits. Document test coverage and results.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Create app data model",
+        "description": "Implement the data model to manage game state and probability calculations.",
+        "details": "Create a GameState class or struct that manages the current state of the app, including total dice count (n), current bid (k), calculated probability, and break-even threshold. Implement as an ObservableObject for SwiftUI integration. Include methods to update dice count and bid values, with appropriate validation (n between 1-40, k between 0-n). Connect to the ProbabilityEngine to retrieve probability values and break-even thresholds. Implement computed properties for probability color coding based on thresholds (green ≥50%, yellow 30-49%, red <30%).",
+        "testStrategy": "Write unit tests to verify state updates correctly propagate. Test validation logic ensures values stay within acceptable ranges. Verify color coding logic returns correct values at boundary conditions (exactly 30%, 50%). Test integration with ProbabilityEngine returns expected values.",
+        "priority": "high",
+        "dependencies": [
+          17
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design GameState class with ObservableObject pattern",
+            "description": "Create the GameState class implementing ObservableObject with properties for dice count, current bid, and other game state variables.",
+            "dependencies": [],
+            "details": "Implement a GameState class that conforms to ObservableObject protocol. Include @Published properties for totalDiceCount (n), currentBid (k), and other necessary state variables. Set up initializers with default values. Ensure the class properly publishes changes to enable SwiftUI view updates. Document the purpose of each property with comments.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement input validation logic",
+            "description": "Add validation logic to ensure dice count and bid values stay within acceptable ranges.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create methods to update dice count and bid values with validation logic. Ensure dice count (n) stays between 1-40. Ensure bid value (k) stays between 0 and the current dice count (n). Implement validation in both setters and dedicated update methods. Add error handling or correction for invalid inputs. Write unit tests to verify validation logic works correctly at boundary conditions.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Integrate with ProbabilityEngine",
+            "description": "Connect GameState to the ProbabilityEngine to calculate probabilities and break-even thresholds.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Add a reference to the ProbabilityEngine in the GameState class. Implement methods to calculate and update probability values when dice count or bid changes. Calculate break-even threshold (k₀) using the engine. Ensure calculations are performed efficiently, possibly with caching for unchanged inputs. Create unit tests to verify correct probability values are returned for various inputs.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement computed properties for UI display",
+            "description": "Create computed properties for probability thresholds and color coding to support the UI layer.",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement computed properties for formatted probability display (as percentage). Add logic to determine probability color coding (green ≥50%, yellow 30-49%, red <30%). Create a computed property for the break-even threshold display. Implement any other helper properties needed by the UI layer. Ensure all computed properties update reactively when underlying state changes. Write tests to verify color coding logic at threshold boundaries.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Design and implement Screen 1 - Dice Selection View",
+        "description": "Create the first screen UI for selecting the total number of dice in play.",
+        "details": "Implement a SwiftUI View for the dice selection screen with: 1) Small header displaying 'Dice in Play', 2) Large number display showing current dice count (1-40), 3) Digital Crown integration to adjust dice count, 4) Large tappable right-arrow icon on right edge. Use SF font for text elements. Implement Digital Crown focus and rotation handling to update dice count. Ensure the view has a dark background for readability and battery efficiency. Add haptic feedback for Crown rotation increments.",
+        "testStrategy": "Test UI rendering on different Apple Watch sizes. Verify Digital Crown correctly adjusts dice count with appropriate increment/decrement behavior. Test edge cases (min/max values). Verify tap gesture on arrow correctly triggers navigation. Test accessibility features including VoiceOver compatibility.",
+        "priority": "high",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement basic UI layout for Dice Selection View",
+            "description": "Create the foundational SwiftUI layout with header, large number display for dice count, and navigation arrow",
+            "dependencies": [],
+            "details": "Implement a SwiftUI View with a dark background containing: 1) 'Dice in Play' header using SF font, 2) Large number display showing current dice count (1-40), 3) Right-arrow icon positioned on the right edge. Ensure proper spacing and alignment of elements for different watch sizes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Integrate Digital Crown functionality",
+            "description": "Implement Digital Crown rotation handling to adjust the dice count value",
+            "dependencies": [
+              1
+            ],
+            "details": "Add Digital Crown focus and rotation handling to update the dice count. Implement proper increment/decrement behavior with appropriate step size. Ensure values stay within valid range (1-40). Set up proper state management to track and update the dice count value.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement navigation button functionality",
+            "description": "Add tap gesture recognition to the right-arrow for navigation to the Probability View",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement tap gesture recognizer for the right-arrow icon. Set up proper navigation handling to transition to the Probability View (Screen 2) when tapped. Ensure the navigation is smooth and passes the selected dice count to the next view.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Add haptic feedback for Digital Crown interaction",
+            "description": "Implement haptic feedback when adjusting dice count with the Digital Crown",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate WatchKit haptic feedback for Digital Crown rotation increments. Ensure feedback is subtle but noticeable when changing values. Test different haptic patterns to find the most appropriate feedback style for this interaction.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Perform UI testing and refinement",
+            "description": "Test the Dice Selection View on different watch sizes and refine the UI as needed",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Test UI rendering on different Apple Watch sizes (38mm, 40mm, 41mm, 42mm, 44mm, 45mm). Verify proper scaling and layout on all devices. Test accessibility features including VoiceOver compatibility. Make refinements to spacing, font sizes, and interaction areas based on testing results.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "title": "Design and implement Screen 2 - Probability View",
+        "description": "Create the second screen UI for displaying bid probability and break-even threshold.",
+        "details": "Implement a SwiftUI View for the probability screen with: 1) Small header showing 'Break-even: K₀' with the calculated threshold, 2) Large display of current bid (k), 3) Prominent probability percentage with color coding (green ≥50%, yellow 30-49%, red <30%), 4) Digital Crown integration to adjust bid value, 5) Large tappable left-arrow icon on left edge. Use SF font for text elements. Implement Digital Crown focus and rotation handling to update bid value. Ensure the view has a dark background for readability and battery efficiency. Add haptic feedback for Crown rotation increments.",
+        "testStrategy": "Test UI rendering on different Apple Watch sizes. Verify Digital Crown correctly adjusts bid value with appropriate increment/decrement behavior. Test edge cases (min/max values). Verify tap gesture on arrow correctly triggers navigation. Test color changes at threshold boundaries. Test accessibility features including VoiceOver compatibility.",
+        "priority": "high",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement basic UI layout for Probability View",
+            "description": "Create the foundational SwiftUI layout for the Probability View including the break-even threshold display, current bid display, and probability percentage display.",
+            "dependencies": [],
+            "details": "Implement a dark background view with: 1) Small header showing 'Break-even: K₀' with placeholder for calculated threshold, 2) Large display area for current bid (k), 3) Area for probability percentage display. Use SF font for all text elements and ensure proper spacing and alignment for watch display.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement color-coded probability indicator",
+            "description": "Create a dynamic probability display that changes color based on threshold values (green ≥50%, yellow 30-49%, red <30%).",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement logic to calculate and display the probability percentage based on the current bid and break-even threshold. Create a color transition system that changes the display color to green when probability is ≥50%, yellow when 30-49%, and red when <30%. Test with various probability values to ensure smooth color transitions.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Integrate Digital Crown for bid adjustment",
+            "description": "Implement Digital Crown focus and rotation handling to adjust the bid value with appropriate increment/decrement behavior.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add Digital Crown focus handling to the view. Implement rotation detection to increase/decrease bid value. Include appropriate increment size and ensure proper constraints for minimum and maximum values. Add haptic feedback for each increment/decrement. Ensure the probability display updates in real-time as the bid value changes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement navigation button and gestures",
+            "description": "Add a large tappable left-arrow icon on the left edge of the screen for navigation back to the Dice Selection View.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a large, easily tappable left-arrow icon using SF Symbols. Position it on the left edge of the screen. Implement tap gesture recognition and navigation logic to return to the previous screen. Add appropriate haptic feedback for successful taps.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Perform UI testing with various probability thresholds",
+            "description": "Test the Probability View UI with different probability values to ensure correct display, color coding, and responsiveness.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Create test cases for different probability scenarios (above 50%, between 30-49%, below 30%). Test UI rendering on different Apple Watch sizes. Verify Digital Crown correctly adjusts bid value. Test edge cases (min/max values). Verify tap gesture on arrow correctly triggers navigation. Test color changes at threshold boundaries. Test accessibility features including VoiceOver compatibility.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "title": "Implement navigation between screens",
+        "description": "Create the navigation system to transition between the two main screens.",
+        "details": "Implement a navigation controller or coordinator to manage transitions between Screen 1 (Dice Selection) and Screen 2 (Probability View). Use SwiftUI's navigation APIs appropriate for watchOS. Ensure tapping the right arrow on Screen 1 transitions to Screen 2, and tapping the left arrow on Screen 2 returns to Screen 1. Implement smooth animations for transitions. Ensure the GameState is properly shared between views to maintain consistent state during navigation.",
+        "testStrategy": "Test navigation flow in both directions. Verify state is preserved correctly when navigating between screens. Test rapid navigation to ensure no state corruption. Verify animations are smooth and performant. Test navigation with VoiceOver enabled to ensure accessibility.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          20
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up navigation controller/coordinator structure",
+            "description": "Create the base navigation architecture to manage transitions between the Dice Selection and Probability View screens",
+            "dependencies": [],
+            "details": "Implement a navigation coordinator or use SwiftUI's NavigationStack to manage the app's navigation flow. Create a shared GameState object that will be passed between views to maintain consistent state. Define the navigation paths and routes between screens. Set up the main app structure to support this navigation pattern. Ensure the coordinator can handle both programmatic and user-initiated navigation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement screen transitions with animations",
+            "description": "Create smooth transitions between screens with appropriate animations for watchOS",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement the right arrow tap on Screen 1 (Dice Selection) to navigate to Screen 2 (Probability View). Implement the left arrow tap on Screen 2 to return to Screen 1. Add appropriate slide animations for transitions that follow watchOS design guidelines. Ensure transitions are performant and don't cause frame drops. Implement proper gesture handling for navigation actions. Test transitions on different watch sizes to ensure consistent behavior.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Ensure state preservation during navigation",
+            "description": "Implement mechanisms to maintain app state consistency when navigating between screens",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Ensure the GameState object is properly shared and updated between views. Implement state restoration if the app is backgrounded during navigation. Add proper state validation when transitioning between screens to prevent inconsistent states. Test rapid navigation between screens to ensure state remains consistent. Implement proper cleanup of resources when navigating away from screens. Add logging for state changes during navigation for debugging purposes.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 22,
+        "title": "Implement Digital Crown integration",
+        "description": "Integrate Digital Crown controls for adjusting values on both screens.",
+        "details": "Implement Digital Crown rotation handling for both screens using WatchKit and SwiftUI integration. For Screen 1, configure Crown to adjust dice count (n) from 1-40 with appropriate sensitivity. For Screen 2, configure Crown to adjust bid value (k) from 0 to current n value. Implement proper focus handling to ensure Crown controls the correct value on each screen. Add haptic feedback for value changes. Ensure smooth and responsive updates to UI when rotating the Crown. Implement acceleration for faster scrolling through larger ranges.\n\n**Documentation References:**\n- [Digital Crown Programming Guide](https://developer.apple.com/documentation/watchkit/digital_crown)\n- [SwiftUI for watchOS](https://developer.apple.com/documentation/swiftui/watchos)\n- [watchOS Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/watchos)",
+        "testStrategy": "Test Crown rotation in both directions on both screens. Verify values update correctly and stay within valid ranges. Test edge cases (min/max values). Measure response time to ensure <50ms updates. Test with different rotation speeds to verify acceleration behavior. Test haptic feedback functionality.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          20
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Research Digital Crown APIs and Best Practices",
+            "description": "Investigate watchOS Digital Crown APIs, documentation, and implementation patterns to understand how to properly integrate with the app.",
+            "dependencies": [],
+            "details": "Research Apple's documentation on Digital Crown integration in watchOS. Study WKCrownSequencer and focusable() modifier in SwiftUI. Analyze sample code and best practices for Digital Crown implementation. Document findings on sensitivity settings, acceleration patterns, and haptic feedback options. Identify potential challenges with focus management between screens.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Rotation Handling for Dice Count Adjustment",
+            "description": "Configure Digital Crown to adjust the dice count (n) from 1-40 on Screen 1 with appropriate sensitivity and acceleration.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement WKCrownSequencer integration for Screen 1. Configure rotation delta to map to dice count changes. Implement bounds checking to ensure n stays within 1-40 range. Add acceleration for faster scrolling through larger ranges. Ensure UI updates immediately reflect Crown rotation. Test sensitivity to ensure intuitive control.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Rotation Handling for Bid Value Adjustment",
+            "description": "Configure Digital Crown to adjust the bid value (k) from 0 to current n value on Screen 2.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement WKCrownSequencer integration for Screen 2. Configure rotation delta to map to bid value changes. Implement dynamic bounds checking to ensure k stays within 0 to n range. Add acceleration for faster scrolling through larger ranges. Ensure UI updates immediately reflect Crown rotation. Test sensitivity to ensure intuitive control.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Focus Management Between Screens",
+            "description": "Create a system to manage Digital Crown focus as the user navigates between different screens and UI elements.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Implement focus management using SwiftUI's focusable() modifier. Create a focus state system that tracks the current focusable element. Ensure Crown focus transfers appropriately during screen transitions. Test focus behavior with different navigation patterns. Implement visual indicators for the currently focused element.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Haptic Feedback and Acceleration",
+            "description": "Add haptic feedback for Digital Crown interactions and implement acceleration for faster scrolling through larger ranges.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Implement WKHapticType feedback for value changes and boundary conditions. Configure acceleration curve for Crown rotation to allow faster scrolling through larger ranges. Test different acceleration patterns to find optimal user experience. Ensure haptic feedback is subtle but noticeable. Implement different haptic patterns for different events (value change, reaching min/max).",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 23,
+        "title": "Create color-coded probability display",
+        "description": "Implement the color-coded probability display based on threshold values.",
+        "details": "Create a custom SwiftUI component for displaying the probability percentage with appropriate color coding: green for P ≥ 50%, yellow for 30% ≤ P < 50%, and red for P < 30%. Implement smooth color transitions when crossing thresholds. Ensure text remains readable against the color background. Format probability as a whole number percentage (0-100%). Implement appropriate accessibility traits to ensure color information is available to VoiceOver users.\n\n**Documentation References:**\n- [watchOS Color Guidelines](https://developer.apple.com/design/human-interface-guidelines/watchos/visual-design/color)\n- [watchOS Typography](https://developer.apple.com/design/human-interface-guidelines/watchos/visual-design/typography)\n- [watchOS Accessibility](https://developer.apple.com/documentation/watchos/apps/accessibility)",
+        "testStrategy": "Test color changes at threshold boundaries (29%→30%, 30%→29%, 49%→50%, 50%→49%). Verify text formatting displays whole numbers correctly. Test color contrast meets accessibility standards. Verify VoiceOver correctly announces probability and significance (favorable/unfavorable). Test on different watch sizes and display modes.",
+        "priority": "medium",
+        "dependencies": [
+          20
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design custom SwiftUI probability component",
+            "description": "Create a SwiftUI component that displays probability as a percentage with dynamic background color based on threshold values",
+            "dependencies": [],
+            "details": "Design a reusable SwiftUI component that displays probability as a whole number percentage (0-100%). Implement the basic layout with appropriate font sizes and styling. Ensure the component can be easily integrated into the Probability View screen. Create a clean API for the component that accepts a probability value and optional configuration parameters.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement color threshold logic",
+            "description": "Add logic to change background color based on probability thresholds: green (≥50%), yellow (30-49%), red (<30%)",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement the color-coding logic based on probability thresholds. Create a function that returns the appropriate color based on the current probability value. Ensure proper color contrast between the background color and text to maintain readability across all threshold ranges. Add unit tests to verify color changes at boundary conditions (29%→30%, 49%→50%, etc.).",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Add smooth color transition animations",
+            "description": "Implement animations for smooth transitions between colors when probability crosses thresholds",
+            "dependencies": [
+              2
+            ],
+            "details": "Add SwiftUI animations to create smooth transitions between colors when probability values cross thresholds. Determine appropriate animation duration and easing functions for a polished user experience. Ensure animations work correctly when rapidly crossing multiple thresholds. Test performance to ensure animations remain smooth even during rapid probability changes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement accessibility enhancements",
+            "description": "Add VoiceOver support and accessibility features to convey color-coded information non-visually",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Implement accessibility modifiers to ensure VoiceOver correctly announces both the probability value and its significance (favorable/unfavorable). Add appropriate accessibility traits and labels. Create dynamic accessibility hints that change based on the current probability threshold. Test with VoiceOver enabled to verify all information conveyed visually through colors is also available non-visually.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 24,
+        "title": "Implement first-launch onboarding overlay",
+        "description": "Create an onboarding overlay to explain app usage on first launch.",
+        "details": "Implement an onboarding overlay that appears on first app launch to explain how to use the Digital Crown and tap navigation. Create simple, clear illustrations showing Crown rotation and tap gestures. Design overlay with multiple steps explaining both screens. Store a user preference flag to track whether onboarding has been shown. Implement gesture to dismiss overlay. Ensure overlay is accessible with VoiceOver.",
+        "testStrategy": "Test overlay appears on first launch only. Verify user preference is correctly stored and respected on subsequent launches. Test dismissal gesture works correctly. Verify all onboarding content is accessible with VoiceOver. Test overlay appearance on different watch sizes.",
+        "priority": "medium",
+        "dependencies": [
+          21
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design multi-step onboarding content and illustrations",
+            "description": "Create visual designs and content for each step of the onboarding overlay",
+            "dependencies": [],
+            "details": "Design clear, concise illustrations showing Crown rotation and tap gestures. Create simple text explanations for each onboarding step. Ensure designs are optimized for all watch sizes. Include final dismissal instruction. Prepare assets in appropriate format for implementation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement overlay presentation logic",
+            "description": "Develop the technical framework for displaying and navigating through the multi-step overlay",
+            "dependencies": [
+              1
+            ],
+            "details": "Create SwiftUI views for the overlay container and step content. Implement pagination controls for moving between steps. Add dismissal gesture recognition. Ensure overlay appears above main app content. Implement smooth transitions between steps.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement user preference storage",
+            "description": "Create system to track and store whether the user has completed onboarding",
+            "dependencies": [
+              2
+            ],
+            "details": "Use UserDefaults to store onboarding completion flag. Implement logic to check flag on app launch. Create function to mark onboarding as complete when user finishes or dismisses. Test persistence across app restarts.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement accessibility for onboarding overlay",
+            "description": "Ensure the onboarding experience is fully accessible with VoiceOver",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Add proper accessibility labels and traits to all onboarding elements. Ensure VoiceOver can navigate through all steps. Implement accessibility announcements for step transitions. Test complete onboarding flow with VoiceOver enabled. Verify dismissal gesture works with accessibility features.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 25,
+        "title": "Optimize app performance and memory usage",
+        "description": "Optimize the app for watchOS performance constraints and ensure efficient memory usage.",
+        "details": "Profile app performance to identify and address any bottlenecks. Optimize the probability lookup table storage to minimize memory footprint (<50KB as specified). Implement efficient data structures for probability calculations. Ensure UI updates occur within 50ms as specified. Optimize SwiftUI view hierarchy to minimize redraws. Implement appropriate caching strategies for frequently accessed values. Test and optimize battery usage by minimizing unnecessary computations.\n\n**Documentation References:**\n- [watchOS Performance](https://developer.apple.com/documentation/watchos/apps/optimizing_your_watchos_app)\n- [Instruments User Guide](https://developer.apple.com/documentation/xcode/analyzing-your-apps-performance)\n- [Memory Management](https://developer.apple.com/documentation/swift/memory_management)",
+        "testStrategy": "Use Instruments to profile CPU, memory, and energy usage. Benchmark probability lookups to verify <50ms performance. Measure memory footprint to ensure <50KB for lookup table. Test UI responsiveness during Crown rotation and navigation. Test on oldest supported watch hardware to verify performance on constrained devices.",
+        "priority": "medium",
+        "dependencies": [
+          17,
+          18,
+          22
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Profile and identify performance bottlenecks",
+            "description": "Use Instruments to analyze CPU, memory usage, and execution time to identify the main performance bottlenecks in the app",
+            "dependencies": [],
+            "details": "Run the app through Instruments focusing on Time Profiler and Allocations instruments. Identify methods with high CPU usage or execution time. Create a baseline performance report documenting current metrics including UI response time during Crown rotation and probability calculation speed. Focus on operations that exceed the 50ms target for UI updates.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Optimize probability lookup table for memory efficiency",
+            "description": "Redesign the probability lookup table to minimize memory footprint while maintaining fast access times",
+            "dependencies": [
+              1
+            ],
+            "details": "Analyze current table structure and implement a more memory-efficient representation. Consider techniques like data compression, sparse matrix representation, or mathematical approximations where appropriate. Measure memory usage before and after optimization to ensure the table stays under the 50KB requirement. Document the optimization approach and memory savings achieved.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement caching strategies for frequent calculations",
+            "description": "Design and implement caching mechanisms to avoid redundant probability calculations",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Identify frequently performed calculations based on profiling results. Implement an LRU (Least Recently Used) cache or similar mechanism to store results of common probability calculations. Balance cache size with memory constraints. Add cache hit/miss metrics to evaluate effectiveness. Ensure cache is properly invalidated when game parameters change.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Optimize SwiftUI view hierarchy",
+            "description": "Refactor SwiftUI views to minimize redraws and improve rendering performance",
+            "dependencies": [
+              1
+            ],
+            "details": "Use Instruments' SwiftUI profiling tools to identify inefficient view updates. Implement proper view identity and equatable conformance to prevent unnecessary redraws. Break complex views into smaller components with appropriate dependencies. Use @State, @ObservedObject, and other property wrappers correctly to minimize view updates. Test UI responsiveness during rapid Crown rotation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Optimize battery usage",
+            "description": "Reduce power consumption by minimizing unnecessary computations and optimizing background processes",
+            "dependencies": [
+              1,
+              3,
+              4
+            ],
+            "details": "Use Energy Diagnostics in Instruments to identify power-intensive operations. Implement lazy loading for non-critical data. Batch updates to reduce wake cycles. Optimize algorithms to reduce CPU usage. Test battery impact during extended usage sessions. Document battery optimization techniques implemented and their measured impact on battery life.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 26,
+        "title": "Implement app icon and branding",
+        "description": "Design and implement app icon and branding elements.",
+        "details": "Create app icon in all required watchOS sizes. Design should be simple, recognizable, and relate to dice probability concept. Implement any additional branding elements needed for the app. Ensure icon looks good in both light and dark modes on the watch home screen. Follow Apple's Human Interface Guidelines for watchOS app icons.",
+        "testStrategy": "Verify icon displays correctly at all required sizes. Test appearance on watch home screen in both light and dark modes. Verify icon meets App Store requirements. Get feedback on icon recognizability and appropriateness for the app concept.",
+        "priority": "medium",
+        "dependencies": [
+          16
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design app icon concept",
+            "description": "Create a conceptual design for the app icon that effectively represents dice probability in a simple, recognizable way.",
+            "dependencies": [],
+            "details": "Research effective watchOS app icons. Sketch multiple concepts that relate to dice probability. Consider visual elements like dice, probability curves, or abstract representations. Ensure design works well in small sizes. Create mockups in both light and dark backgrounds. Get feedback on 2-3 final concepts before proceeding to asset creation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create icon assets in required watchOS sizes",
+            "description": "Generate all required icon assets for watchOS in appropriate sizes and formats.",
+            "dependencies": [
+              1
+            ],
+            "details": "Based on the approved concept, create icon assets for all required watchOS sizes (38mm, 40mm, 42mm, 44mm, 46mm, 49mm). Follow Apple's Human Interface Guidelines for watchOS icons. Ensure proper resolution and scaling. Create assets in PNG format with transparency as needed. Prepare App Store icon version (1024x1024). Test icon appearance at actual sizes to verify clarity and recognizability.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement and test icons in the app",
+            "description": "Integrate the icon assets into the app and verify correct display across all contexts.",
+            "dependencies": [
+              2
+            ],
+            "details": "Add icon assets to the asset catalog in Xcode. Configure app icon set properly in the project settings. Test icon appearance on the watch home screen in both light and dark modes. Verify icon displays correctly at all required sizes. Test on different watch models if possible. Verify icon meets App Store requirements. Make any necessary adjustments based on testing results.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 27,
+        "title": "Implement accessibility features",
+        "description": "Ensure the app is fully accessible with VoiceOver and other accessibility features.",
+        "details": "Implement proper accessibility labels, hints, and traits for all UI elements. Ensure VoiceOver can navigate both screens effectively. Add appropriate accessibility announcements for probability changes and navigation events. Test and optimize Dynamic Type support for text elements. Implement appropriate haptic feedback for important interactions. Ensure color information (for probability thresholds) is conveyed through means other than color alone.",
+        "testStrategy": "Test complete app flow with VoiceOver enabled. Verify all UI elements have appropriate accessibility labels and traits. Test with different Dynamic Type sizes. Verify haptic feedback works correctly for all interactions. Test with other accessibility features like Reduce Motion and Increase Contrast.",
+        "priority": "medium",
+        "dependencies": [
+          19,
+          20,
+          23
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add accessibility labels and traits",
+            "description": "Implement proper accessibility labels, hints, and traits for all UI elements in both screens of the app.",
+            "dependencies": [],
+            "details": "Review all UI components and add appropriate accessibility identifiers, labels, and traits. Ensure numeric inputs have proper accessibility values. Add descriptive hints for interactive elements. Make sure probability results are clearly labeled for screen readers. Ensure all buttons have meaningful accessibility labels that describe their actions.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement VoiceOver navigation support",
+            "description": "Ensure VoiceOver can properly navigate through all screens and interact with all elements in a logical order.",
+            "dependencies": [
+              1
+            ],
+            "details": "Configure proper focus order for VoiceOver navigation. Implement custom actions where needed for complex controls. Ensure Digital Crown interactions are accessible via VoiceOver. Test navigation between screens with VoiceOver enabled. Implement proper grouping of related elements for easier navigation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Add accessibility announcements",
+            "description": "Implement announcements for dynamic content changes and important state updates.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Add announcements when probability values change. Implement announcements for navigation events between screens. Create announcements for Digital Crown value adjustments. Ensure error states are properly announced. Use UIAccessibility.announcement() for temporary state changes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Dynamic Type support",
+            "description": "Ensure all text elements properly scale with Dynamic Type settings for users with visual impairments.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use scalable font sizes for all text elements. Test layout with various Dynamic Type size settings. Ensure UI remains usable at largest accessibility text sizes. Implement proper text truncation or wrapping where needed. Adjust spacing and layout constraints to accommodate larger text.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Test with accessibility features",
+            "description": "Perform comprehensive testing with all relevant accessibility features enabled.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Test with VoiceOver enabled throughout the entire app flow. Verify functionality with Reduce Motion enabled. Test with different contrast settings and color filters. Verify haptic feedback works with accessibility settings. Document any issues found and create a final accessibility compliance report.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 28,
+        "title": "Implement comprehensive error handling",
+        "description": "Add robust error handling throughout the app to handle edge cases gracefully.",
+        "details": "Implement error handling for all potential failure points, including invalid input values, calculation errors, and state inconsistencies. Create user-friendly error messages or recovery mechanisms. Handle edge cases specified in the PRD, including n < 6, k ranges from 0 to n, and minimum n is 1. Implement input validation to prevent invalid values. Add logging for debugging purposes. Ensure app remains stable under all conditions.",
+        "testStrategy": "Test all identified edge cases to verify correct handling. Attempt to input invalid values to test validation. Force error conditions to verify graceful recovery. Review logs to ensure appropriate information is captured. Test app stability under unusual usage patterns.",
+        "priority": "medium",
+        "dependencies": [
+          17,
+          18,
+          22
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Identify and document error conditions and edge cases",
+            "description": "Systematically identify all potential error conditions, edge cases, and failure points throughout the app.",
+            "dependencies": [],
+            "details": "Create a comprehensive document listing all possible error scenarios including: invalid input values (n < 1, n > 40, k < 0, k > n), calculation errors, state inconsistencies during navigation, Digital Crown input edge cases, and any potential API failures. Document expected behavior for each scenario. Review the PRD to ensure all specified edge cases are included (n < 6, k ranges from 0 to n, minimum n is 1). Categorize errors by severity and impact on user experience.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement input validation system",
+            "description": "Create a robust input validation system for all user inputs to prevent invalid values.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement validation logic for dice count (n) to ensure it stays within 1-40 range. Create validation for bid value (k) to ensure it stays within 0-n range. Add guards in Digital Crown handlers to prevent out-of-bounds values. Implement validation for any user preferences or stored values. Create reusable validation functions that can be called from multiple points in the app. Ensure validation happens before state updates to prevent inconsistent app state.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Design and implement error handling UI",
+            "description": "Create user-friendly error messages and recovery mechanisms that work well on the watch interface.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Design unobtrusive error notifications appropriate for the small watch screen. Implement haptic feedback patterns to indicate different error types. Create clear, concise error messages that explain the issue and suggest resolution. Implement automatic recovery mechanisms where possible. Add visual indicators for invalid inputs (e.g., red highlights, warning icons). Ensure all error UI elements are accessible with VoiceOver. Test error UI on different watch sizes to ensure readability.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement logging and debugging system",
+            "description": "Create a comprehensive logging system to capture errors and app state for debugging purposes.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement a structured logging system with different severity levels (debug, info, warning, error). Create log categories for different app components (UI, calculations, state management). Log all error conditions with relevant context information. Implement crash reporting for unexpected errors. Add state logging at key points in the app lifecycle. Create a mechanism to export logs for debugging. Ensure logging has minimal performance impact on the watch app.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 29,
+        "title": "Create comprehensive app testing suite",
+        "description": "Develop a complete testing suite for the app including unit, integration, and UI tests.",
+        "details": "Implement unit tests for all core functionality, especially the probability engine and game state model. Create integration tests for component interactions. Implement UI tests to verify screen flows and interactions. Set up CI/CD pipeline for automated testing. Create test cases for all edge cases and requirements specified in the PRD. Implement performance tests to verify timing requirements (<50ms updates).",
+        "testStrategy": "Run test suite on multiple watchOS versions and device types. Verify all tests pass consistently. Measure code coverage and aim for >80% coverage of core functionality. Test performance requirements are met consistently. Verify all PRD requirements are covered by test cases.",
+        "priority": "medium",
+        "dependencies": [
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Unit Tests for Probability Engine",
+            "description": "Create comprehensive unit tests for the probability calculation engine to verify mathematical accuracy and edge cases.",
+            "dependencies": [],
+            "details": "Write tests to verify probability calculations for various dice counts and bid values. Include edge cases like n=1, n=40, k=0, k=n. Test threshold calculations for break-even points. Verify handling of invalid inputs. Ensure calculations complete within performance requirements (<50ms). Aim for >90% code coverage of the probability engine.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Develop Unit Tests for Game State Model",
+            "description": "Create unit tests for the GameState model to verify state management, validation, and data flow.",
+            "dependencies": [],
+            "details": "Test state initialization with default and custom values. Verify validation logic for dice count (1-40) and bid values (0-n). Test computed properties for color coding thresholds. Verify ObservableObject notifications trigger correctly on state changes. Test integration points with ProbabilityEngine. Include tests for all public methods and properties.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create Integration Tests for Component Interactions",
+            "description": "Implement tests that verify correct interactions between different components of the application.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Test data flow between UI components and the GameState model. Verify probability updates trigger UI refreshes. Test color-coded probability display receives and displays correct values. Verify user inputs from UI correctly update the GameState. Test navigation flows and state persistence between views.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement UI Tests for Screen Flows and Interactions",
+            "description": "Create UI tests to verify user interface behavior, navigation, and interaction patterns.",
+            "dependencies": [
+              3
+            ],
+            "details": "Test all UI controls function as expected (sliders, buttons, etc.). Verify screen transitions and navigation paths. Test accessibility features including VoiceOver support and color contrast. Verify UI updates correctly reflect state changes. Test on multiple watch sizes (40mm, 44mm, etc.) and orientations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Develop Performance Tests for Timing Requirements",
+            "description": "Create performance tests to verify the application meets timing and resource usage requirements.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Implement benchmarks for probability calculations to verify <50ms update time. Test UI responsiveness during state changes. Measure and verify memory usage remains within acceptable limits. Test battery impact during extended use. Create stress tests with rapid input changes to verify stability.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Set Up CI/CD Pipeline for Automated Testing",
+            "description": "Configure continuous integration and deployment pipeline to automate test execution and reporting.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "details": "Set up GitHub Actions or similar CI service for automated test runs. Configure test reporting and code coverage metrics. Implement pre-commit hooks for running critical tests locally. Set up automated UI testing on simulator devices. Configure notifications for test failures. Document the testing process for future contributors.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 30,
+        "title": "Prepare app for App Store submission",
+        "description": "Prepare all required assets and information for App Store submission.",
+        "details": "Create App Store screenshots for all supported watch sizes. Write compelling App Store description highlighting key features. Prepare privacy policy. Configure app for TestFlight distribution. Create marketing materials including preview video if desired. Complete all required App Store Connect information. Ensure app meets all App Store Review Guidelines. Prepare release notes for initial version.\n\n**Documentation References:**\n- [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)\n- [watchOS App Store](https://developer.apple.com/documentation/watchos/apps/distributing_your_watchos_app)\n- [App Store Connect](https://developer.apple.com/documentation/appstoreconnect)",
+        "testStrategy": "Verify all App Store assets meet Apple's requirements. Test TestFlight distribution to ensure app installs and functions correctly. Review App Store information for accuracy and completeness. Conduct pre-submission checklist review against App Store Review Guidelines.",
+        "priority": "low",
+        "dependencies": [
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create screenshots for all supported watch sizes",
+            "description": "Generate high-quality screenshots of the app for all supported Apple Watch sizes required by the App Store.",
+            "dependencies": [],
+            "details": "Use the watchOS simulator to capture screenshots of key app features and screens for all supported watch sizes (38mm, 40mm, 41mm, 42mm, 44mm, 45mm, 49mm). Ensure screenshots showcase the app's main functionality, UI design, and unique selling points. Create at least 3-5 screenshots per device size showing different aspects of the app. Edit screenshots to ensure they are visually appealing and clearly demonstrate the app's value proposition.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Write App Store description and metadata",
+            "description": "Develop compelling App Store listing content including app description, keywords, and other required metadata.",
+            "dependencies": [],
+            "details": "Write a concise but compelling app description that clearly explains what 'Liars' Dice Probability' does and its benefits. Create a shorter promotional text (170 characters max) that highlights the key value proposition. Research and select relevant keywords to optimize App Store search visibility. Prepare app preview text that appears before users download. Create category selection and age rating information. Develop support URL and marketing URL if applicable. Prepare version-specific 'What's New' text for the initial release.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Prepare privacy policy and required documentation",
+            "description": "Create a comprehensive privacy policy and gather all other documentation required for App Store submission.",
+            "dependencies": [],
+            "details": "Draft a privacy policy that complies with Apple's requirements and applicable privacy laws. Ensure the policy covers data collection, usage, storage, and user rights. Prepare App Review Information including contact details and any special instructions for reviewers. Document any special entitlements or permissions the app requires and their justification. Prepare explanations for any sensitive API usage that might trigger App Review questions. Create any additional legal documentation required for the app's functionality.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Configure TestFlight distribution",
+            "description": "Set up TestFlight for beta testing before final App Store submission.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Configure app for TestFlight distribution in App Store Connect. Create internal and external testing groups as needed. Add test users to appropriate testing groups. Prepare beta test information including test details and feedback instructions. Configure build settings for TestFlight compatibility. Upload a build to TestFlight and verify it passes Apple's beta review process. Test the TestFlight installation process on actual devices to ensure it works correctly.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Final review against App Store guidelines",
+            "description": "Conduct a comprehensive review of the app against all App Store Review Guidelines to ensure compliance.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Review the complete App Store Review Guidelines document. Create a checklist of all applicable guidelines and verify the app meets each requirement. Test all app functionality to ensure it works as described in the App Store listing. Verify all required metadata, screenshots, and documentation are complete and accurate. Check for any potential rejection reasons such as bugs, crashes, or incomplete information. Ensure app performance meets expectations on all supported watch sizes. Prepare responses for potential review questions about app functionality or implementation.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-19T13:30:54.989Z",
+      "updated": "2025-07-19T18:45:58.083Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
