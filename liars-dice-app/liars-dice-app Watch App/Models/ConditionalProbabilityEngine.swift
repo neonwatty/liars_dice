@@ -36,17 +36,31 @@ class ConditionalProbabilityEngine {
         // Get count of player's dice showing the bid face
         let myMatchingDice = handConfig.countMatchingBidFace()
         
+        // DEBUG LOGGING
+        print("=== ConditionalProbabilityEngine Debug ===")
+        print("Bid count: \(bid)")
+        print("Total dice: \(totalDice)")
+        print("Bid face: \(handConfig.bidFace)")
+        print("My dice count: \(handConfig.diceCount)")
+        print("My matching dice: \(myMatchingDice)")
+        print("Hand summary: \(handConfig.handSummary())")
+        
         // Calculate remaining dice needed and unknown dice count
         let remainingNeeded = bid - myMatchingDice
         let unknownDice = totalDice - handConfig.diceCount
         
+        print("Remaining needed: \(remainingNeeded)")
+        print("Unknown dice: \(unknownDice)")
+        
         // If we already have enough matching dice, probability is 100%
         if remainingNeeded <= 0 {
+            print("Already have enough! Returning 100%")
             return 1.0
         }
         
         // If we need more dice than there are unknown dice, probability is 0%
         if remainingNeeded > unknownDice {
+            print("Need more than available! Returning 0%")
             return 0.0
         }
         
@@ -69,6 +83,9 @@ class ConditionalProbabilityEngine {
         
         // Cache the result
         cacheResult(key: cacheKey, value: probability)
+        
+        print("Final probability: \(probability) (\(Int(round(probability * 100)))%)")
+        print("==========================================")
         
         return probability
     }

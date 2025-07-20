@@ -186,7 +186,8 @@ struct HandConfigurationTests {
     @Test func testSetMultipleDice() {
         var config = HandConfiguration(diceCount: 5)
         
-        #expect(config.setDice(at: [0, 2, 4], to: 6))
+        let result = config.setDice(at: [0, 2, 4], to: 6)
+        #expect(result == true)
         #expect(config.getDie(at: 0) == 6)
         #expect(config.getDie(at: 1) == nil)
         #expect(config.getDie(at: 2) == 6)
@@ -199,7 +200,8 @@ struct HandConfigurationTests {
         var config = HandConfiguration(diceCount: 3)
         
         // Should return false due to invalid index, but valid indices should still be set
-        #expect(!config.setDice(at: [0, 1, 5], to: 4))
+        let result = config.setDice(at: [0, 1, 5], to: 4)
+        #expect(result == false)
         #expect(config.getDie(at: 0) == 4)
         #expect(config.getDie(at: 1) == 4)
     }

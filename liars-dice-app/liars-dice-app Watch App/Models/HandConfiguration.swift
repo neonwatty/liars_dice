@@ -47,6 +47,8 @@ struct HandConfiguration {
         }
         
         faceValues[index] = value
+        print("HandConfiguration: Set die at index \(index) to \(value ?? 0) (nil=0)")
+        print("HandConfiguration: Updated face values = \(faceValues)")
         return true
     }
     
@@ -69,7 +71,10 @@ struct HandConfiguration {
     /// Count how many dice show the current bid face
     /// - Returns: Number of dice showing the bid face
     func countMatchingBidFace() -> Int {
-        return countMatching(face: bidFace)
+        let count = countMatching(face: bidFace)
+        print("HandConfiguration: Counting bid face \(bidFace), found \(count) matches")
+        print("HandConfiguration: Face values = \(faceValues)")
+        return count
     }
     
     /// Check if all dice have been set

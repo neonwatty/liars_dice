@@ -17,7 +17,6 @@ struct GameStateScreen3Tests {
         let gameState = GameState()
         
         #expect(gameState.myDiceCount == 0)
-        #expect(!gameState.shouldShowEnterHandButton)
         #expect(gameState.handConfiguration == nil)
     }
     
@@ -26,7 +25,6 @@ struct GameStateScreen3Tests {
         
         gameState.updateMyDiceCount(5)
         #expect(gameState.myDiceCount == 5)
-        #expect(gameState.shouldShowEnterHandButton)
     }
     
     @Test func testMyDiceCountValidation() {
@@ -122,31 +120,30 @@ struct GameStateScreen3Tests {
     
     // MARK: - Navigation Tests
     
-    @Test func testShowHandEntry() {
+    @Test func testHandConfigurationInitialization() {
         let gameState = GameState()
         
-        // Should not show with 0 dice
+        // Should not initialize with 0 dice
         gameState.updateMyDiceCount(0)
-        gameState.showHandEntry()
-        #expect(!gameState.showingHandEntry)
+        gameState.initializeHandConfiguration()
         #expect(gameState.handConfiguration == nil)
         
-        // Should show with positive dice count
+        // Should initialize with positive dice count
         gameState.updateMyDiceCount(3)
-        gameState.showHandEntry()
-        #expect(gameState.showingHandEntry)
+        gameState.initializeHandConfiguration()
         #expect(gameState.handConfiguration != nil)
+        #expect(gameState.handConfiguration?.diceCount == 3)
     }
     
-    @Test func testHideHandEntry() {
+    @Test func testResetHandConfigurationFromNavigation() {
         let gameState = GameState()
         gameState.updateMyDiceCount(3)
-        gameState.showHandEntry()
+        gameState.initializeHandConfiguration()
         
-        #expect(gameState.showingHandEntry)
+        #expect(gameState.handConfiguration != nil)
         
-        gameState.hideHandEntry()
-        #expect(!gameState.showingHandEntry)
+        gameState.resetHandConfiguration()
+        #expect(gameState.handConfiguration == nil)
     }
     
     // MARK: - Conditional Probability Tests
@@ -246,16 +243,16 @@ struct GameStateScreen3Tests {
         #expect(["Favorable", "Moderate", "Unlikely"].contains(description))
     }
     
-    @Test func testShouldShowEnterHandButton() {
+    @Test func testMyDiceCountTracking() {
         let gameState = GameState()
         
-        #expect(!gameState.shouldShowEnterHandButton)
+        #expect(gameState.myDiceCount == 0)
         
         gameState.updateMyDiceCount(1)
-        #expect(gameState.shouldShowEnterHandButton)
+        #expect(gameState.myDiceCount == 1)
         
         gameState.updateMyDiceCount(0)
-        #expect(!gameState.shouldShowEnterHandButton)
+        #expect(gameState.myDiceCount == 0)
     }
     
     // MARK: - Edge Cases

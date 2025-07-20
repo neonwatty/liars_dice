@@ -132,8 +132,12 @@ class GameState: ObservableObject {
     
     /// Update the bid face for hand configuration
     func updateHandBidFace(_ bidFace: Int) {
-        guard var config = handConfiguration else { return }
+        guard var config = handConfiguration else { 
+            print("GameState: No hand configuration to update bid face")
+            return 
+        }
         
+        print("GameState: Updating bid face from \(config.bidFace) to \(bidFace)")
         config.bidFace = bidFace
         handConfiguration = config
         updateConditionalProbability()
@@ -182,7 +186,9 @@ class GameState: ObservableObject {
     
     /// Update conditional probability for Screen 3
     private func updateConditionalProbability() {
+        print("GameState: updateConditionalProbability called")
         guard let config = handConfiguration else {
+            print("GameState: No hand configuration, setting probability to 0%")
             conditionalProbability = 0.0
             conditionalProbabilityPercentage = "0%"
             conditionalProbabilityColor = .red

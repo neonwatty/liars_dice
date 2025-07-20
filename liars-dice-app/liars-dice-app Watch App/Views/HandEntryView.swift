@@ -137,6 +137,9 @@ struct HandEntryView: View {
                     Text("\(gameState.handConfiguration?.bidFace ?? 1)s")
                         .font(.caption)
                         .foregroundColor(crownMode == .bidFace ? .blue : .white)
+                        .onAppear {
+                            print("HandEntryView: Bid face display showing: \(gameState.handConfiguration?.bidFace ?? 1)")
+                        }
                 }
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
@@ -158,6 +161,7 @@ struct HandEntryView: View {
             )
             .onChange(of: crownValue) { newValue in
                 if crownMode == .bidFace {
+                    print("HandEntryView: Updating bid face to \(Int(newValue))")
                     gameState.updateHandBidFace(Int(newValue))
                 }
             }
@@ -197,6 +201,7 @@ struct HandEntryView: View {
         .onChange(of: crownValue) { newValue in
             if crownMode == .dieValue {
                 let value = Int(newValue) == 0 ? nil : Int(newValue)
+                print("HandEntryView: Updating die at index \(selectedDieIndex) to \(value ?? 0) (nil=0)")
                 gameState.updateHandDie(at: selectedDieIndex, to: value)
             }
         }
@@ -298,13 +303,22 @@ struct HandEntryView: View {
     // MARK: - Helper Methods
     
     private func setupInitialState() {
+        print("HandEntryView: Setting up initial state")
+        print("HandEntryView: Current bid count from GameState: \(gameState.currentBid)")
+        print("HandEntryView: My dice count: \(gameState.myDiceCount)")
+        
         // Start with my dice count mode
         crownMode = .myDiceCount
         crownValue = Double(gameState.myDiceCount)
         
         // Initialize hand configuration if we have dice
         if gameState.myDiceCount > 0 && gameState.handConfiguration == nil {
+            print("HandEntryView: Initializing hand configuration")
             gameState.initializeHandConfiguration()
+        }
+        
+        if let config = gameState.handConfiguration {
+            print("HandEntryView: Hand config initialized with bid face: \(config.bidFace)")
         }
         
         // Select first unset die, or first die if all are set
@@ -312,14 +326,17 @@ struct HandEntryView: View {
     }
     
     private func selectDie(at index: Int) {
+        print("HandEntryView: Selected die at index \(index)")
         selectedDieIndex = index
         toggleCrownMode(.dieValue)
         
         // Update crown value to current die value
         if let value = gameState.handConfiguration?.getDie(at: index) {
             crownValue = Double(value)
+            print("HandEntryView: Die has value \(value)")
         } else {
             crownValue = 0.0
+            print("HandEntryView: Die has no value (nil)")
         }
     }
     
