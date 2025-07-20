@@ -91,8 +91,9 @@ struct ProbabilityView: View {
                     .padding(.bottom, 10)
             }
             
-            // Left arrow for navigation back
+            // Navigation arrows
             HStack {
+                // Left arrow for navigation back
                 Button(action: {
                     dismiss()
                 }) {
@@ -111,8 +112,27 @@ struct ProbabilityView: View {
                 .accessibilityAddTraits(.isButton)
                 
                 Spacer()
+                
+                // Right arrow for navigation to hand entry
+                NavigationLink(destination: HandEntryView().environmentObject(gameState)) {
+                    Image(systemName: "chevron.right")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(
+                            Circle()
+                                .fill(Color.gray.opacity(0.2))
+                        )
+                }
+                .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Enter your dice hand")
+                .accessibilityHint("Navigate to hand entry screen for more accurate probability")
+                .accessibilityAddTraits(.isButton)
+                .onTapGesture {
+                    gameState.initializeHandConfiguration()
+                }
             }
-            .padding(.leading, 5)
+            .padding(.horizontal, 5)
         }
         .navigationBarHidden(true)
     }
