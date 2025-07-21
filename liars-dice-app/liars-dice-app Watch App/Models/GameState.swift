@@ -122,22 +122,32 @@ class GameState: ObservableObject {
     
     /// Update a specific die in the hand configuration
     func updateHandDie(at index: Int, to value: Int?) {
-        guard var config = handConfiguration else { return }
+        print("GameState: updateHandDie called - index: \(index), value: \(String(describing: value))")
+        guard var config = handConfiguration else { 
+            print("GameState: ERROR - No hand configuration exists!")
+            return 
+        }
+        
+        print("GameState: Before update - die \(index) value: \(String(describing: config.getDie(at: index)))")
         
         if config.setDie(at: index, to: value) {
+            print("GameState: setDie returned true")
             handConfiguration = config
             updateConditionalProbability()
+            
+            // Verify the update
+            if let newConfig = handConfiguration {
+                print("GameState: After update - die \(index) value: \(String(describing: newConfig.getDie(at: index)))")
+            }
+        } else {
+            print("GameState: ERROR - setDie returned false!")
         }
     }
     
     /// Update the bid face for hand configuration
     func updateHandBidFace(_ bidFace: Int) {
-        guard var config = handConfiguration else { 
-            print("GameState: No hand configuration to update bid face")
-            return 
-        }
+        guard var config = handConfiguration else { return }
         
-        print("GameState: Updating bid face from \(config.bidFace) to \(bidFace)")
         config.bidFace = bidFace
         handConfiguration = config
         updateConditionalProbability()
@@ -186,9 +196,7 @@ class GameState: ObservableObject {
     
     /// Update conditional probability for Screen 3
     private func updateConditionalProbability() {
-        print("GameState: updateConditionalProbability called")
         guard let config = handConfiguration else {
-            print("GameState: No hand configuration, setting probability to 0%")
             conditionalProbability = 0.0
             conditionalProbabilityPercentage = "0%"
             conditionalProbabilityColor = .red

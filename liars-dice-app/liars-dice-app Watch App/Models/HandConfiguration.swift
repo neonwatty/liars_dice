@@ -40,15 +40,24 @@ struct HandConfiguration {
     /// - Returns: True if successful, false if invalid parameters
     @discardableResult
     mutating func setDie(at index: Int, to value: Int?) -> Bool {
-        guard index >= 0 && index < diceCount else { return false }
+        print("HandConfig: setDie called - index: \(index), value: \(String(describing: value))")
+        print("HandConfig: diceCount: \(diceCount), current faceValues: \(faceValues)")
+        
+        guard index >= 0 && index < diceCount else { 
+            print("HandConfig: ERROR - Invalid index \(index) for diceCount \(diceCount)")
+            return false 
+        }
         
         if let value = value {
-            guard value >= 1 && value <= 6 else { return false }
+            guard value >= 1 && value <= 6 else { 
+                print("HandConfig: ERROR - Invalid value \(value), must be 1-6")
+                return false 
+            }
         }
         
         faceValues[index] = value
-        print("HandConfiguration: Set die at index \(index) to \(value ?? 0) (nil=0)")
-        print("HandConfiguration: Updated face values = \(faceValues)")
+        print("HandConfig: Successfully set die \(index) to \(String(describing: value))")
+        print("HandConfig: Updated faceValues: \(faceValues)")
         return true
     }
     
@@ -71,10 +80,7 @@ struct HandConfiguration {
     /// Count how many dice show the current bid face
     /// - Returns: Number of dice showing the bid face
     func countMatchingBidFace() -> Int {
-        let count = countMatching(face: bidFace)
-        print("HandConfiguration: Counting bid face \(bidFace), found \(count) matches")
-        print("HandConfiguration: Face values = \(faceValues)")
-        return count
+        return countMatching(face: bidFace)
     }
     
     /// Check if all dice have been set

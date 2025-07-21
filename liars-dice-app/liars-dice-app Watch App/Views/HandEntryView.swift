@@ -13,6 +13,8 @@ struct HandEntryView: View {
     @State private var selectedDieIndex: Int = 0
     @State private var crownValue = 0.0
     @State private var crownMode: CrownMode = .myDiceCount
+    @State private var hasInitializedDieSelection = false
+    @State private var refreshID = UUID()
     
     private enum CrownMode {
         case myDiceCount
@@ -73,6 +75,23 @@ struct HandEntryView: View {
         .onAppear {
             setupInitialState()
         }
+        .onChange(of: gameState.handConfiguration) { _, newValue in
+            if newValue != nil && !hasInitializedDieSelection {
+                // Only select first die on initial configuration setup
+                selectFirstAvailableDie()
+                hasInitializedDieSelection = true
+            } else if newValue == nil {
+                // Reset flag when configuration is cleared
+                hasInitializedDieSelection = false
+            }
+        }
+        .onChange(of: gameState.myDiceCount) { oldValue, newValue in
+            print("HandEntry: myDiceCount changed from \(oldValue) to \(newValue)")
+            // Update crown value to match
+            if crownMode == .myDiceCount {
+                crownValue = Double(newValue)
+            }
+        }
     }
     
     // MARK: - Header
@@ -107,9 +126,17 @@ struct HandEntryView: View {
                 isContinuous: false,
                 isHapticFeedbackEnabled: true
             )
-            .onChange(of: crownValue) { newValue in
+            .onChange(of: crownValue) { _, newValue in
                 if crownMode == .myDiceCount {
-                    gameState.updateMyDiceCount(Int(newValue))
+                    let newCount = Int(newValue)
+                    print("HandEntry: Updating myDiceCount to \(newCount)")
+                    gameState.updateMyDiceCount(newCount)
+                    
+                    // Initialize hand configuration if we now have dice
+                    if newCount > 0 && gameState.handConfiguration == nil {
+                        print("HandEntry: Creating hand configuration after dice count update")
+                        gameState.initializeHandConfiguration()
+                    }
                 }
             }
         }
@@ -137,9 +164,6 @@ struct HandEntryView: View {
                     Text("\(gameState.handConfiguration?.bidFace ?? 1)s")
                         .font(.caption)
                         .foregroundColor(crownMode == .bidFace ? .blue : .white)
-                        .onAppear {
-                            print("HandEntryView: Bid face display showing: \(gameState.handConfiguration?.bidFace ?? 1)")
-                        }
                 }
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
@@ -159,9 +183,8 @@ struct HandEntryView: View {
                 isContinuous: false,
                 isHapticFeedbackEnabled: true
             )
-            .onChange(of: crownValue) { newValue in
+            .onChange(of: crownValue) { _, newValue in
                 if crownMode == .bidFace {
-                    print("HandEntryView: Updating bid face to \(Int(newValue))")
                     gameState.updateHandBidFace(Int(newValue))
                 }
             }
@@ -180,6 +203,7 @@ struct HandEntryView: View {
                     size: dieSize,
                     isSelected: selectedDieIndex == index && crownMode == .dieValue
                 )
+                .id("\(index)-\(refreshID)")
                 .onTapGesture {
                     selectDie(at: index)
                 }
@@ -191,18 +215,28 @@ struct HandEntryView: View {
         .focusable(crownMode == .dieValue)
         .digitalCrownRotation(
             $crownValue,
-            from: 0,
+            from: 1,
             through: 6,
             by: 1,
             sensitivity: .medium,
             isContinuous: false,
             isHapticFeedbackEnabled: true
         )
-        .onChange(of: crownValue) { newValue in
+        .onChange(of: crownValue) { oldValue, newValue in
             if crownMode == .dieValue {
-                let value = Int(newValue) == 0 ? nil : Int(newValue)
-                print("HandEntryView: Updating die at index \(selectedDieIndex) to \(value ?? 0) (nil=0)")
+                print("HandEntry: Crown onChange fired - old: \(oldValue), new: \(newValue), mode: \(crownMode)")
+                let value = Int(newValue)
+                print("HandEntry: Updating die \(selectedDieIndex) to value \(value)")
                 gameState.updateHandDie(at: selectedDieIndex, to: value)
+                // Force view refresh
+                refreshID = UUID()
+                
+                // Verify the update
+                if let updatedValue = gameState.handConfiguration?.getDie(at: selectedDieIndex) {
+                    print("HandEntry: After crown update, die \(selectedDieIndex) value is: \(updatedValue)")
+                } else {
+                    print("HandEntry: ERROR - Die \(selectedDieIndex) is nil after crown update!")
+                }
             }
         }
     }
@@ -303,9 +337,7 @@ struct HandEntryView: View {
     // MARK: - Helper Methods
     
     private func setupInitialState() {
-        print("HandEntryView: Setting up initial state")
-        print("HandEntryView: Current bid count from GameState: \(gameState.currentBid)")
-        print("HandEntryView: My dice count: \(gameState.myDiceCount)")
+        print("HandEntry: setupInitialState - myDiceCount: \(gameState.myDiceCount)")
         
         // Start with my dice count mode
         crownMode = .myDiceCount
@@ -313,30 +345,42 @@ struct HandEntryView: View {
         
         // Initialize hand configuration if we have dice
         if gameState.myDiceCount > 0 && gameState.handConfiguration == nil {
-            print("HandEntryView: Initializing hand configuration")
+            print("HandEntry: Initializing hand configuration")
             gameState.initializeHandConfiguration()
+        } else if gameState.handConfiguration != nil {
+            print("HandEntry: Hand configuration exists, selecting first die")
+            // If configuration already exists, select first die immediately
+            selectFirstAvailableDie()
+        } else {
+            print("HandEntry: No dice count set, cannot initialize hand configuration")
         }
         
-        if let config = gameState.handConfiguration {
-            print("HandEntryView: Hand config initialized with bid face: \(config.bidFace)")
-        }
-        
-        // Select first unset die, or first die if all are set
-        selectFirstAvailableDie()
+        // If configuration doesn't exist yet, die selection will happen in onChange
     }
     
     private func selectDie(at index: Int) {
-        print("HandEntryView: Selected die at index \(index)")
+        print("HandEntry: selectDie called for index \(index)")
         selectedDieIndex = index
         toggleCrownMode(.dieValue)
         
         // Update crown value to current die value
         if let value = gameState.handConfiguration?.getDie(at: index) {
             crownValue = Double(value)
-            print("HandEntryView: Die has value \(value)")
+            print("HandEntry: Die \(index) has existing value: \(value)")
         } else {
-            crownValue = 0.0
-            print("HandEntryView: Die has no value (nil)")
+            // Start at 1 for unset dice so user sees a face immediately
+            crownValue = 1.0
+            print("HandEntry: Die \(index) is unset, setting to 1")
+            // Set the die to 1 immediately
+            gameState.updateHandDie(at: index, to: 1)
+            refreshID = UUID()
+            
+            // Verify the update
+            if let newValue = gameState.handConfiguration?.getDie(at: index) {
+                print("HandEntry: After update, die \(index) value is: \(newValue)")
+            } else {
+                print("HandEntry: ERROR - Die \(index) is still nil after update!")
+            }
         }
     }
     
@@ -347,7 +391,11 @@ struct HandEntryView: View {
         for i in 0..<config.diceCount {
             if config.getDie(at: i) == nil {
                 selectedDieIndex = i
-                crownValue = 0.0
+                // Start at 1 for unset dice so user sees a face immediately
+                crownValue = 1.0
+                // Set the die to 1 immediately
+                gameState.updateHandDie(at: i, to: 1)
+                refreshID = UUID()
                 return
             }
         }
@@ -371,7 +419,11 @@ struct HandEntryView: View {
             if let value = gameState.handConfiguration?.getDie(at: selectedDieIndex) {
                 crownValue = Double(value)
             } else {
-                crownValue = 0.0
+                // Start at 1 for unset dice so user sees a face immediately
+                crownValue = 1.0
+                // Set the die to 1 immediately
+                gameState.updateHandDie(at: selectedDieIndex, to: 1)
+                refreshID = UUID()
             }
         }
     }
