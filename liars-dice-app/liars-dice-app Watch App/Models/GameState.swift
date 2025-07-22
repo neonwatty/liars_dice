@@ -48,10 +48,16 @@ class GameState: ObservableObject {
     @Published var conditionalProbabilityPercentage: String = "0%"
     @Published var conditionalProbabilityColor: Color = .red
     
+    // Specific face probability for Screen 3 "Original" display
+    @Published var specificFaceProbability: Double = 0.0
+    @Published var specificFaceProbabilityPercentage: String = "0%"
+    @Published var specificFaceProbabilityColor: Color = .red
+    
     // MARK: - Private Properties
     
     private let probabilityEngine = ProbabilityEngine.shared
     private let conditionalProbabilityEngine = ConditionalProbabilityEngine.shared
+    private let specificFaceProbabilityEngine = SpecificFaceProbabilityEngine.shared
     private let minDice = 1
     private let maxDice = 40
     
@@ -59,6 +65,7 @@ class GameState: ObservableObject {
     
     init() {
         updateProbability()
+        updateSpecificFaceProbability()
     }
     
     // MARK: - Public Methods
@@ -117,6 +124,7 @@ class GameState: ObservableObject {
         }
         
         handConfiguration = HandConfiguration(diceCount: myDiceCount, bidFace: bidFace)
+        updateSpecificFaceProbability()
         updateConditionalProbability()
     }
     
@@ -150,6 +158,7 @@ class GameState: ObservableObject {
         
         config.bidFace = bidFace
         handConfiguration = config
+        updateSpecificFaceProbability()
         updateConditionalProbability()
     }
     
@@ -159,6 +168,9 @@ class GameState: ObservableObject {
         conditionalProbability = 0.0
         conditionalProbabilityPercentage = "0%"
         conditionalProbabilityColor = .red
+        specificFaceProbability = 0.0
+        specificFaceProbabilityPercentage = "0%"
+        specificFaceProbabilityColor = .red
     }
     
     
@@ -192,6 +204,9 @@ class GameState: ObservableObject {
         
         // Announce significant probability changes for VoiceOver users
         announceSignificantChanges(oldProbability: oldProbability)
+        
+        // Also update specific face probability when bid changes
+        updateSpecificFaceProbability()
     }
     
     /// Update conditional probability for Screen 3
@@ -286,6 +301,27 @@ class GameState: ObservableObject {
     
     // MARK: - Screen 3 Computed Properties
     
+    /// Update specific face probability for Screen 3
+    private func updateSpecificFaceProbability() {
+        // Calculate probability for specific face (not ANY face)
+        specificFaceProbability = specificFaceProbabilityEngine.getProbability(
+            bid: currentBid,
+            totalDice: totalDiceCount
+        )
+        
+        // Update percentage string
+        specificFaceProbabilityPercentage = specificFaceProbabilityEngine.getProbabilityPercentage(
+            bid: currentBid,
+            totalDice: totalDiceCount
+        )
+        
+        // Update color
+        specificFaceProbabilityColor = specificFaceProbabilityEngine.getProbabilityColor(
+            bid: currentBid,
+            totalDice: totalDiceCount
+        )
+    }
+    
     /// Get probability improvement from conditional calculation
     var probabilityImprovement: Double {
         guard let config = handConfiguration else { return 0.0 }
@@ -294,7 +330,7 @@ class GameState: ObservableObject {
             bid: currentBid,
             totalDice: totalDiceCount,
             handConfig: config,
-            originalProbability: currentProbability
+            originalProbability: specificFaceProbability  // Use specific face probability as baseline
         )
     }
     

@@ -252,9 +252,9 @@ struct HandEntryView: View {
                         .font(.caption2)
                         .foregroundColor(.gray.opacity(0.8))
                     
-                    Text(gameState.probabilityPercentage)
+                    Text(gameState.specificFaceProbabilityPercentage)
                         .font(.caption)
-                        .foregroundColor(gameState.probabilityColor)
+                        .foregroundColor(gameState.specificFaceProbabilityColor)
                 }
                 
                 Spacer()
