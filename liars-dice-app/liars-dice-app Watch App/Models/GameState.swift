@@ -28,6 +28,15 @@ class GameState: ObservableObject {
         }
     }
     
+    @Published private(set) var currentBidFace: Int = 1 {
+        didSet {
+            syncHandConfigurationBidFace()
+            updateProbability()
+            updateSpecificFaceProbability()
+            updateConditionalProbability()
+        }
+    }
+    
     @Published private(set) var currentProbability: Double = 0.0
     @Published private(set) var probabilityPercentage: String = "0%"
     @Published private(set) var probabilityColor: Color = .red
@@ -38,7 +47,25 @@ class GameState: ObservableObject {
     @Published var myDiceCount: Int = 0 {
         didSet {
             if myDiceCount != oldValue {
-                resetHandConfiguration()
+                // Only reset if count actually changed and we're decreasing
+                // When increasing, we keep the existing configuration and just resize
+                if myDiceCount < oldValue || myDiceCount == 0 {
+                    resetHandConfiguration()
+                } else if myDiceCount > oldValue && handConfiguration != nil {
+                    // Resize the existing configuration to preserve dice values
+                    print("GameState: myDiceCount increased from \(oldValue) to \(myDiceCount), resizing hand configuration")
+                    if var config = handConfiguration {
+                        // Create a new configuration with the new size, preserving existing values
+                        var newConfig = HandConfiguration(diceCount: myDiceCount, bidFace: config.bidFace)
+                        // Copy existing dice values
+                        for i in 0..<min(oldValue, myDiceCount) {
+                            if let value = config.getDie(at: i) {
+                                _ = newConfig.setDie(at: i, to: value)
+                            }
+                        }
+                        handConfiguration = newConfig
+                    }
+                }
             }
         }
     }
@@ -106,6 +133,14 @@ class GameState: ObservableObject {
         updateCurrentBid(currentBid - 1)
     }
     
+    /// Update the current bid face with validation
+    func updateCurrentBidFace(_ newFace: Int) {
+        let validatedFace = max(1, min(6, newFace))
+        if validatedFace != currentBidFace {
+            currentBidFace = validatedFace
+        }
+    }
+    
     // MARK: - Screen 3 Methods
     
     /// Update my dice count with validation
@@ -117,13 +152,17 @@ class GameState: ObservableObject {
     }
     
     /// Initialize hand configuration for Screen 3
-    func initializeHandConfiguration(bidFace: Int = 1) {
+    func initializeHandConfiguration() {
+        print("GameState: initializeHandConfiguration called - myDiceCount: \(myDiceCount), totalDiceCount: \(totalDiceCount)")
         guard myDiceCount > 0 else {
+            print("GameState: myDiceCount is 0, setting handConfiguration to nil")
             handConfiguration = nil
             return
         }
         
-        handConfiguration = HandConfiguration(diceCount: myDiceCount, bidFace: bidFace)
+        print("GameState: Creating HandConfiguration with \(myDiceCount) dice and bidFace \(currentBidFace)")
+        handConfiguration = HandConfiguration(diceCount: myDiceCount, bidFace: currentBidFace)
+        print("GameState: HandConfiguration created successfully")
         updateSpecificFaceProbability()
         updateConditionalProbability()
     }
@@ -152,14 +191,14 @@ class GameState: ObservableObject {
         }
     }
     
-    /// Update the bid face for hand configuration
-    func updateHandBidFace(_ bidFace: Int) {
+    /// Sync hand configuration bid face with current bid face
+    private func syncHandConfigurationBidFace() {
         guard var config = handConfiguration else { return }
         
-        config.bidFace = bidFace
-        handConfiguration = config
-        updateSpecificFaceProbability()
-        updateConditionalProbability()
+        if config.bidFace != currentBidFace {
+            config.bidFace = currentBidFace
+            handConfiguration = config
+        }
     }
     
     /// Reset hand configuration
